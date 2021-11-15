@@ -1,0 +1,13 @@
+#import { Query, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query } into Logger from "w3://ens/js-logger.web3api.eth"
+#import { Query } into GraphNode from "w3://ens/graph-node.web3api.eth"
+#import { Query, Request, Response } into Http from "w3://ens/http.web3api.eth"
+#import { Query } into DateTime from "w3://ens/datetime.eth"
+#import { Query } into Gelato from "w3://ens/gelato.eth"
+
+type Query implements Gelato_Query{}
+
+# Only modify here.
+type UserConfig {
+  counterAddress: String!
+}

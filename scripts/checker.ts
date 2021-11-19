@@ -1,30 +1,30 @@
 import { getWeb3ApiClient } from "./utils";
+import { encode } from "@msgpack/msgpack";
 
 const main = async () => {
-  const PROD_URI = "w3://ipfs/QmUScQWHJhtuGCyfkVXi81XK9XChJ9rdV1k5wJD8Y6ptAs";
+  const TEST_URI = "w3://ipfs/QmdwhegcY5RHHt29x3yGZKxeNvbKBQexvaAmKAMDG3Xfgz";
 
-  const goerliClient = await getWeb3ApiClient("goerli", "prod");
-  const maticClient = await getWeb3ApiClient("matic", "prod");
+  const client = await getWeb3ApiClient("goerli", "prod");
 
-  const counterCheckerGoerli = await goerliClient.query({
-    uri: PROD_URI,
+  const userConfig = {
+    counterAddress: "0xaBB322c65e9E0F8c7D4f28F3a5Deb8084aF6d2F4",
+  };
+  const buffer = encode(userConfig);
+
+  const checker = await client.query({
+    uri: TEST_URI,
     query: `
-        query counterCheckerGoerli{
-          counterCheckerGoerli
-        }`,
+      query {
+        checker(
+          argBuffer: $arg
+        )
+      }`,
+    variables: {
+      arg: buffer,
+    },
   });
 
-  console.log(counterCheckerGoerli.data);
-
-  const counterCheckerMatic = await maticClient.query({
-    uri: PROD_URI,
-    query: `
-        query counterCheckerMatic{
-          counterCheckerMatic
-        }`,
-  });
-
-  console.log(counterCheckerMatic.data);
+  console.log(checker);
 };
 
 main();

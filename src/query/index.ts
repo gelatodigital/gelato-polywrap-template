@@ -15,7 +15,14 @@ import {
 export function checker(input: Input_checker): Gelato_CheckerResult {
   const config = UserConfig.fromBuffer(input.argBuffer);
   const COUNTER = config.counterAddress;
-  const ethConnection = input.connection as Ethereum_Connection;
+  const connection = input.connection;
+  let ethConnection: Ethereum_Connection | null = null;
+  if (connection) {
+    ethConnection = {
+      node: connection.node,
+      networkNameOrChainId: connection.networkNameOrChainId,
+    };
+  }
 
   Logger_Query.log({
     level: Logger_Logger_LogLevel.INFO,

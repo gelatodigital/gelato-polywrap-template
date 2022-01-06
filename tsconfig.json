@@ -12,6 +12,6 @@
     "rootDir": "src",
     "useUnknownInCatchVariables": false
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

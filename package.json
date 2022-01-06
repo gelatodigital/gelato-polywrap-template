@@ -1,11 +1,12 @@
 {
-  "name": "templates-api-assemblyscript",
-  "description": "Web3API Assemblyscript Template",
+  "name": "gelato-polywrap-template",
+  "description": "Gelato Polywrap Template",
   "private": true,
-  "version": "0.0.1-prealpha.42",
+  "version": "0.0.1-prealpha.57",
   "scripts": {
     "codegen": "npx w3 codegen",
     "build": "npx w3 build",
+    "query": "ts-node ./scripts/index.ts",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down",
     "deploy": "npx w3 build --ipfs http://localhost:5001 --test-ens checker.eth",
@@ -17,18 +18,17 @@
   "devDependencies": {
     "@msgpack/msgpack": "^2.7.1",
     "@tsconfig/recommended": "^1.0.1",
-    "@web3api/cli": "^0.0.1-prealpha.49",
-    "@web3api/client-js": "^0.0.1-prealpha.49",
-    "@web3api/test-env-js": "^0.0.1-prealpha.49",
-    "@web3api/wasm-as": "^0.0.1-prealpha.49",
+    "@web3api/cli": "^0.0.1-prealpha.59",
+    "@web3api/client-js": "^0.0.1-prealpha.59",
+    "@web3api/test-env-js": "^0.0.1-prealpha.59",
+    "@web3api/wasm-as": "^0.0.1-prealpha.59",
     "assemblyscript": "^0.19.17",
     "assemblyscript-json": "^1.1.0",
-    "date-time-plugin": "^0.0.1-prealpha.49",
+    "eth-crypto": "^2.1.0",
     "ethers": "^5.4.7",
-    "gelato-web3api-interface": "^0.0.1",
-    "json-as": "^0.2.6",
+    "gelato-polywrap-interface": "^0.0.1-prealpha.56.1",
+    "gelato-polywrap-plugin": "^0.0.1-prealpha.56",
     "solc": "^0.8.9",
-    "typescript": "^4.4.4",
-    "yarn-upgrade-all": "^0.5.4"
+    "typescript": "^4.5.4"
   }
 }

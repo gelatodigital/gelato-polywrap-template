@@ -1,9 +1,8 @@
 import {
-  DateTime_Query,
   Ethereum_Connection,
   Ethereum_Query,
   Gelato_CheckerResult,
-  Gelato_Ethereum_Connection,
+  GelatoPlugin_Query,
   GraphNode_Query,
   Http_Query,
   Input_checker,
@@ -13,9 +12,16 @@ import {
 } from "./w3";
 
 export function checker(input: Input_checker): Gelato_CheckerResult {
+  // Deserialize arguments you have passed
   const config = UserConfig.fromBuffer(input.argBuffer);
-  const COUNTER = config.counterAddress;
+  const counterAddress = config.counterAddress;
+  const encryptedString = config.encodedApi;
+
+  // Gas price, decryption key and eth provider is passed by Gelato by default
   const connection = input.connection;
+  const decryptKey = input.decryptKey;
+  const gasPrice = input.gasPrice;
+
   let ethConnection: Ethereum_Connection | null = null;
   if (connection) {
     ethConnection = {
@@ -24,56 +30,48 @@ export function checker(input: Input_checker): Gelato_CheckerResult {
     };
   }
 
-  Logger_Query.log({
-    level: Logger_Logger_LogLevel.INFO,
-    message: `config.counterAddress : ${config.counterAddress}`,
+  // Decrypt message/string passed as argument
+  const api = GelatoPlugin_Query.decrypt({ decryptKey, encryptedString });
+
+  // Subgraph query
+  const subgraphReq = GraphNode_Query.querySubgraph({
+    subgraphAuthor: "gelatodigital",
+    subgraphName: "poke-me-polygon",
+    query: `{
+      tasks(first: 1){
+        id
+      }
+    }
+    `,
   });
 
+  // Reading on-chain data
   const lastExecuted = Ethereum_Query.callContractView({
-    address: COUNTER,
+    address: counterAddress,
     method: "function lastExecuted() view returns (uint256)",
     args: null,
     connection: ethConnection,
   });
 
-  const count = Ethereum_Query.callContractView({
-    address: COUNTER,
-    method: "function count() view returns (uint256)",
-    args: null,
-    connection: ethConnection,
-  });
-
-  Logger_Query.log({
-    level: Logger_Logger_LogLevel.INFO,
-    message: `Last executed : ${lastExecuted}`,
-  });
-
-  Logger_Query.log({
-    level: Logger_Logger_LogLevel.INFO,
-    message: `Count : ${count}`,
-  });
-
-  const timeNow = Math.floor(
-    parseInt(DateTime_Query.currentTime({}).toString()) / 1000
-  );
+  // Getting epoch unix timestamp in seconds
+  const timeNow = GelatoPlugin_Query.timeNowInSeconds({}).toInt32();
   const THREE_MINUTES = 3 * 60;
   const nextExecutionTime = parseInt(lastExecuted) + THREE_MINUTES;
 
-  Logger_Query.log({
-    level: Logger_Logger_LogLevel.INFO,
-    message: `nextExecutionTime : ${nextExecutionTime}`,
-  });
-
-  Logger_Query.log({
-    level: Logger_Logger_LogLevel.INFO,
-    message: `timeNow : ${timeNow}`,
-  });
+  log(`Counter Address: ${counterAddress}`);
+  log(`Gas Price: ${gasPrice}`);
+  log(`Api decrypted: ${api}`);
+  log(`Subgraph Req: ${subgraphReq}`);
+  log(`Last Execution Time: ${lastExecuted}`);
+  log(`Time now: ${timeNow}`);
+  log(`Next Execution Time: ${nextExecutionTime}`);
 
   const canExec = timeNow >= nextExecutionTime;
 
+  // Build payload
   const execPayload = Ethereum_Query.encodeFunction({
     method: "function increaseCount(uint256)",
-    args: ["100"],
+    args: ["1000"],
   });
 
   const resolverData: Gelato_CheckerResult = {
@@ -82,4 +80,11 @@ export function checker(input: Input_checker): Gelato_CheckerResult {
   };
 
   return resolverData;
+}
+
+function log(msg: string): void {
+  Logger_Query.log({
+    message: msg,
+    level: Logger_Logger_LogLevel.INFO,
+  });
 }

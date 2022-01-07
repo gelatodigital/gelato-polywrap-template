@@ -14,7 +14,7 @@ const main = async () => {
   queryResolver("goerli", "local", userConfig, gasPrice);
 
   // for prod testing,
-  // const cid = "QmdjK25cTKBGScdjQFc2daz6qVPz6zWzBpvsZXVtQfMBjU";
+  // const cid = "QmThZvZAdHfsu2PsSFZmx8p3AUp4J1YrhnCjRiHNnqEL7z";
   // queryResolver("goerli", "prod", userConfig, gasPrice, cid);
 };
 

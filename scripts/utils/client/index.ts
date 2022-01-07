@@ -4,7 +4,7 @@ import {
   Web3ApiClient,
 } from "@web3api/client-js";
 import { JsonRpcProvider } from "@web3api/client-js/build/pluginConfigs/Ethereum";
-import { ConnectionConfigs, ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ConnectionConfigs } from "@web3api/ethereum-plugin-js";
 import { ethers } from "ethers";
 import { gelatoPlugin } from "gelato-polywrap-plugin";
 
@@ -51,25 +51,20 @@ export const getWeb3ApiClient = async (
   let networkConfig: ConnectionConfigs =
     env == "local" ? { testnet: { provider } } : { [chain]: { provider } };
 
-  const configs: PluginConfigs = ipfsProvider
-    ? { ipfs: { provider: ipfsProvider } }
-    : {};
-
-  const client = await createWeb3ApiClient(configs, {
-    plugins: [
-      {
-        uri: "ens/gelato-plugin.eth",
-        plugin: gelatoPlugin({}),
-      },
-      {
-        uri: "w3://ens/ethereum.web3api.eth",
-        plugin: ethereumPlugin({
-          networks: networkConfig,
-          defaultNetwork: environment,
-        }),
-      },
-    ],
-  });
+  const client = await createWeb3ApiClient(
+    {
+      ethereum: { networks: networkConfig, defaultNetwork: environment },
+      ipfs: { provider: ipfsProvider ? ipfsProvider : "" },
+    },
+    {
+      plugins: [
+        {
+          uri: "ens/gelato-plugin.eth",
+          plugin: gelatoPlugin({}),
+        },
+      ],
+    }
+  );
 
   return client;
 };
